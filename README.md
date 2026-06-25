@@ -3,7 +3,6 @@
 This project performs Aspect-Based Sentiment Analysis on text data. It extracts specific aspects or features from the text and determines the sentiment associated with each aspect using advanced Natural Language Processing techniques.
 
 🌐 **Live Demo**: [Click to Try the App](https://aspect-based-sentiment-analyser.streamlit.app/)  
-📂 **GitHub Repo**: [CHETHANSP27/Aspect-based-Sentimental-Analysis](https://github.com/CHETHANSP27/Aspect-based-Sentimental-Analysis)
 
 
 ## 🚀 Features
@@ -81,6 +80,35 @@ The overall workflow is as follows:
 4.  The code identifies potential aspects (typically nouns) and opinion words (typically adjectives).
 5.  By analyzing the dependency relations, the code links opinion words to the aspects they describe.
 6.  The sentiment for each aspect is calculated using NLTK's VADER (Valence Aware Dictionary and sEntiment Reasoner).
+
+## Attention Bi-LSTM ABSA Model
+
+This repository also includes a reconstructed neural ABSA component that is separate from the existing deployed Stanza/NLTK/VADER pipeline. It is designed to make the Attention Bi-LSTM work reviewable and reproducible without changing the current app behavior.
+
+The neural path includes:
+
+- `src/models/attention_bilstm.py`: aspect-aware Attention Bi-LSTM model.
+- `src/neural/`: preprocessing, dataset loading, training, evaluation, and inference helpers.
+- `data/absa_samples.csv`: compact aspect-level training dataset.
+- `train_attention_bilstm.py`: reproducible training entry point.
+- `predict_attention_bilstm.py`: inference entry point that returns sentiment probabilities and token attention weights.
+- `guide/attention_bilstm_model.md`: architecture and usage notes.
+
+Train the neural model:
+
+```bash
+python train_attention_bilstm.py
+```
+
+Run inference after training:
+
+```bash
+python predict_attention_bilstm.py --sentence "The battery life is excellent, but the camera quality is disappointing." --aspect "battery life"
+```
+
+The output includes the predicted sentiment label, confidence, class probabilities, and attention weights for each token. Running the same sentence with a different aspect, such as `camera quality`, demonstrates how the aspect-conditioned attention changes the model focus.
+
+Important note: the included dataset is intentionally small and self-contained. It demonstrates the model architecture, training loop, inference flow, and attention inspection. It should not be presented as benchmark-level performance without evaluating on a standard ABSA dataset.
 
 ## Installation and Setup
 

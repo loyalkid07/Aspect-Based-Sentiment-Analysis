@@ -1,0 +1,49 @@
+sentence,aspect,label
+"The battery life of this phone is excellent, but the camera quality is disappointing.","battery life",positive
+"The battery life of this phone is excellent, but the camera quality is disappointing.","camera quality",negative
+"The laptop screen is bright, but the keyboard feels cheap.","screen",positive
+"The laptop screen is bright, but the keyboard feels cheap.","keyboard",negative
+"The restaurant has amazing food but terrible service.","food",positive
+"The restaurant has amazing food but terrible service.","service",negative
+"The room was clean and spacious, although the Wi-Fi was unreliable.","room",positive
+"The room was clean and spacious, although the Wi-Fi was unreliable.","Wi-Fi",negative
+"The headphones have rich sound, but the build quality is poor.","sound",positive
+"The headphones have rich sound, but the build quality is poor.","build quality",negative
+"The delivery was quick and the packaging was secure.","delivery",positive
+"The delivery was quick and the packaging was secure.","packaging",positive
+"The movie had great acting, but the story was boring.","acting",positive
+"The movie had great acting, but the story was boring.","story",negative
+"The dress color is beautiful, but the fabric is rough.","color",positive
+"The dress color is beautiful, but the fabric is rough.","fabric",negative
+"The app interface is simple, but the login process is frustrating.","interface",positive
+"The app interface is simple, but the login process is frustrating.","login process",negative
+"The coffee tastes fresh, but the cup size is small.","coffee",positive
+"The coffee tastes fresh, but the cup size is small.","cup size",negative
+"The hotel location is convenient and the staff are polite.","location",positive
+"The hotel location is convenient and the staff are polite.","staff",positive
+"The car mileage is impressive, but the seats are uncomfortable.","mileage",positive
+"The car mileage is impressive, but the seats are uncomfortable.","seats",negative
+"The book cover looks attractive, while the paper quality is poor.","cover",positive
+"The book cover looks attractive, while the paper quality is poor.","paper quality",negative
+"The theatre screen was sharp, but the sound system was horrible.","screen",positive
+"The theatre screen was sharp, but the sound system was horrible.","sound system",negative
+"The shoes look stylish, but the sole is slippery.","shoes",positive
+"The shoes look stylish, but the sole is slippery.","sole",negative
+"The phone price is reasonable and the performance is smooth.","price",positive
+"The phone price is reasonable and the performance is smooth.","performance",positive
+"The charger cable is durable, but the adapter gets hot.","charger cable",positive
+"The charger cable is durable, but the adapter gets hot.","adapter",negative
+"The soup was average and the bread was ordinary.","soup",neutral
+"The soup was average and the bread was ordinary.","bread",neutral
+"The camera is okay, but the battery is excellent.","camera",neutral
+"The camera is okay, but the battery is excellent.","battery",positive
+"The design is acceptable, but the material feels premium.","design",neutral
+"The design is acceptable, but the material feels premium.","material",positive
+"The support response was delayed, though the refund process was smooth.","support response",negative
+"The support response was delayed, though the refund process was smooth.","refund process",positive
+"The game graphics are stunning, but the controls are confusing.","graphics",positive
+"The game graphics are stunning, but the controls are confusing.","controls",negative
+"The smartwatch display is clear, while the strap is uncomfortable.","display",positive
+"The smartwatch display is clear, while the strap is uncomfortable.","strap",negative
+"The course content is useful, but the assignments are unclear.","course content",positive
+"The course content is useful, but the assignments are unclear.","assignments",negative
