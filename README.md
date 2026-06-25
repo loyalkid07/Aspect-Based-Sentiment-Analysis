@@ -3,7 +3,7 @@
 This project performs Aspect-Based Sentiment Analysis on text data. It extracts specific aspects or features from the text and determines the sentiment associated with each aspect using advanced Natural Language Processing techniques.
 
 🌐 **Live Demo**: [Click to Try the App](https://aspect-based-sentiment-analyser.streamlit.app/)  
-📂 **GitHub Repo**: [CHETHANSP27/Aspect-based-Sentimental-Analysis](https://github.com/CHETHANSP27/Aspect-based-Sentimental-Analysis)
+
 
 
 ## 🚀 Features
