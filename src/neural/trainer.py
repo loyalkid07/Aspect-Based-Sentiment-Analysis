@@ -29,7 +29,7 @@ class TrainingConfig:
     epochs: int = 25
     learning_rate: float = 0.003
     seed: int = 42
-    refit_on_full_dataset: bool = True
+    refit_on_full_dataset: bool = False
 
 
 def train_attention_bilstm(config: TrainingConfig) -> dict[str, object]:

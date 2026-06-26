@@ -1,27 +1,43 @@
 [project]
 name = "aspect_based_sentimental_analysis"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "SUSHRUTH3002",email = "sushruthmsetty29@gmail.com"}
-]
+description = "Aspect-Based Sentiment Analysis with a rule-based pipeline and an Attention Bi-LSTM neural prototype."
+
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "pandas (>=2.3.0,<3.0.0)",
-    "stanza (>=1.10.1,<2.0.0)",
-    "numpy (>=2.3.1,<3.0.0)",
-    "nltk (>=3.9.1,<4.0.0)",
-    "streamlit (>=1.46.1,<2.0.0)",
-    "matplotlib (>=3.10.3,<4.0.0)",
-    "plotly (>=6.2.0,<7.0.0)",
-    "transformers (>=4.53.0,<5.0.0)",
-    "scikit-learn (>=1.7.0,<2.0.0)",
-    "wordcloud (>=1.9.4,<2.0.0)",
-    "torch (>=2.7.1,<3.0.0)"
+    "matplotlib>=3.10,<4.0",
+    "nltk>=3.9,<4.0",
+    "numpy>=2.3,<3.0",
+    "pandas>=2.3,<4.0",
+    "plotly>=6.2,<7.0",
+    "stanza>=1.10,<2.0",
+    "streamlit>=1.46,<2.0",
+    "torch>=2.7,<3.0",
+    "wordcloud>=1.9,<2.0"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0,<9.0"
+]
+
+[project.scripts]
+train-attention-bilstm = "train_attention_bilstm:main"
+predict-attention-bilstm = "predict_attention_bilstm:main"
+
+[tool.setuptools]
+py-modules = [
+    "absa_main",
+    "predict_attention_bilstm",
+    "setup_project",
+    "streamlit_app",
+    "train_attention_bilstm"
+]
+
+[tool.setuptools.packages.find]
+include = ["config*", "src*"]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=70.0", "wheel"]
+build-backend = "setuptools.build_meta"

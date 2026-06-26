@@ -20,15 +20,7 @@ class ModelManager:
         self.sid = None
         self.is_initialized = False
     
-    def install_dependencies(self):
-        """Install required Python packages."""
-        try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", "stanza"])
-            print("✓ Dependencies installed successfully!")
-            return True
-        except subprocess.CalledProcessError as e:
-            print(f"✗ Error installing dependencies: {e}")
-            return False
+
     
     def download_nltk_resources(self):
         """Download necessary NLTK resources."""
@@ -41,12 +33,10 @@ class ModelManager:
             'averaged_perceptron_tagger_eng'
         ]
         
-        print("Downloading NLTK resources...")
         success = True
         for resource in resources:
             try:
                 nltk.download(resource, quiet=True)
-                print(f"✓ Downloaded {resource}")
             except Exception as e:
                 print(f"✗ Failed to download {resource}: {e}")
                 success = False
@@ -56,8 +46,19 @@ class ModelManager:
         """Download Stanza model and create pipeline."""
         print("Setting up Stanza pipeline...")
         try:
-            stanza.download(language, verbose=False)
-            self.nlp = stanza.Pipeline(language, verbose=False)
+            import os
+            stanza_dir = os.path.join(os.path.expanduser("~"), "stanza_resources", language)
+            
+            if not os.path.exists(stanza_dir):
+                print("Downloading Stanza models (this happens only once)...")
+                stanza.download(language, verbose=False)
+            
+            try:
+                self.nlp = stanza.Pipeline(language, verbose=False, download_method=None)
+            except TypeError:
+                # Fallback for older stanza versions
+                self.nlp = stanza.Pipeline(language, verbose=False)
+                
             print("✓ Stanza pipeline ready")
             return True
         except Exception as e:
@@ -77,10 +78,6 @@ class ModelManager:
     def setup_all(self):
         """Run complete setup process."""
         print("Starting model setup...")
-        
-        # Install dependencies
-        if not self.install_dependencies():
-            return False
         
         # Download NLTK resources
         if not self.download_nltk_resources():

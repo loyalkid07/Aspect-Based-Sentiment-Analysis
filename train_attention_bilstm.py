@@ -16,6 +16,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--max-length", type=int, default=48)
     parser.add_argument("--context-window", type=int, default=4)
+    parser.add_argument(
+        "--refit-on-full-dataset",
+        action="store_true",
+        help="After holdout evaluation, train the saved checkpoint on all rows.",
+    )
     return parser.parse_args()
 
 
@@ -28,6 +33,7 @@ def main() -> None:
         batch_size=args.batch_size,
         max_length=args.max_length,
         context_window=args.context_window,
+        refit_on_full_dataset=args.refit_on_full_dataset,
     )
     metrics = train_attention_bilstm(config)
     print(json.dumps({"test": metrics["test"], "split_sizes": metrics["split_sizes"]}, indent=2))

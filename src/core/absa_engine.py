@@ -33,18 +33,14 @@ def aspect_sentiment_analysis(txt, stop_words, nlp, sid):
         taggedList = nltk.pos_tag(txt_list)
 
         newwordList = []
-        flag = 0
-        for i in range(0,len(taggedList)-1):
-            if(taggedList[i][1]=="NN" and taggedList[i+1][1]=="NN"):
-                newwordList.append(taggedList[i][0]+taggedList[i+1][0])
-                flag=1
+        i = 0
+        while i < len(taggedList):
+            if i < len(taggedList) - 1 and taggedList[i][1] == "NN" and taggedList[i+1][1] == "NN":
+                newwordList.append(taggedList[i][0] + taggedList[i+1][0])
+                i += 2
             else:
-                if(flag==1):
-                    flag=0
-                    continue
                 newwordList.append(taggedList[i][0])
-                if(i==len(taggedList)-2):
-                    newwordList.append(taggedList[i+1][0])
+                i += 1
 
         finaltxt = ' '.join(word for word in newwordList)
         new_txt_list = nltk.word_tokenize(finaltxt)
@@ -83,7 +79,10 @@ def aspect_sentiment_analysis(txt, stop_words, nlp, sid):
     aspect_sentiments = []
     for aspect in finalcluster:
         aspect_text = aspect[0]
-        sentiment_score = sid.polarity_scores(aspect_text)['compound']
+        # Include the modifiers (from the dependency tree) for sentiment scoring
+        descriptors = " ".join(aspect[1])
+        phrase = f"{aspect_text} {descriptors}".strip()
+        sentiment_score = sid.polarity_scores(phrase)['compound']
         aspect_sentiments.append([aspect_text, sentiment_score])
 
     return aspect_sentiments

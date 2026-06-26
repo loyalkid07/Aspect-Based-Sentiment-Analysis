@@ -7,11 +7,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import os
+from pathlib import Path
 
 # Add the project root to the path for imports
 sys.path.append(os.path.dirname(__file__))
 
 from absa_main import ABSAAnalyzer
+from src.neural.inference import AttentionBiLSTMPredictor
 
 # Configure page
 st.set_page_config(
@@ -40,6 +42,14 @@ def load_absa_analyzer():
     except Exception as e:
         st.error(f"Error initializing ABSA analyzer: {str(e)}")
         return None, False
+
+@st.cache_resource
+def load_neural_predictor(artifact_dir):
+    """Load the saved Attention Bi-LSTM artifacts for neural ABSA."""
+    try:
+        return AttentionBiLSTMPredictor(artifact_dir), None
+    except Exception as e:
+        return None, str(e)
 
 def analyze_single_text(text, analyzer):
     """Analyze a single text using the ABSA analyzer"""
@@ -88,6 +98,37 @@ def format_results_for_display(results):
     
     return pd.DataFrame(formatted_data)
 
+def build_attention_dataframe(attention_weights):
+    """Convert token attention output into a one-row DataFrame for heatmaps."""
+    # Ensure column names are unique by appending their position index
+    unique_columns = [f"{item['token']} ({i})" for i, item in enumerate(attention_weights)]
+    return pd.DataFrame(
+        [[item["weight"] for item in attention_weights]],
+        columns=unique_columns,
+        index=["attention"]
+    )
+
+def render_neural_architecture():
+    """Render the Attention Bi-LSTM architecture as a Graphviz diagram."""
+    st.graphviz_chart(
+        """
+        digraph {
+            rankdir=LR;
+            node [shape=box, style="rounded,filled", color="#374151", fillcolor="#F9FAFB", fontname="Arial"];
+            input [label="Sentence + Target Aspect"];
+            prep [label="Tokenization\\nAspect Mask\\nContext Window"];
+            embed [label="Word Embedding\\n+ Aspect Marker"];
+            bilstm [label="Bidirectional LSTM"];
+            query [label="Aspect Query"];
+            attention [label="Aspect-Conditioned Attention"];
+            classifier [label="Dense Sentiment Classifier"];
+            output [label="Label + Probabilities\\nToken Attention"];
+            input -> prep -> embed -> bilstm -> attention -> classifier -> output;
+            bilstm -> query -> attention;
+        }
+        """
+    )
+
 # Title and description
 st.title("📊 Aspect-Based Sentiment Analysis")
 st.markdown("Analyze sentiment across different aspects of your text using advanced NLP techniques.")
@@ -106,11 +147,87 @@ else:
 st.sidebar.header("Configuration")
 analysis_type = st.sidebar.selectbox(
     "Choose Analysis Type",
-    ["Single Text", "Batch Analysis", "File Upload"]
+    ["Single Text", "Batch Analysis", "File Upload", "Neural ABSA Demo"]
 )
 
 # Main content based on selection
-if analysis_type == "Single Text":
+if analysis_type == "Neural ABSA Demo":
+    st.header("Neural ABSA Demo")
+    st.caption("Attention-based Bi-LSTM inference for a sentence and target aspect.")
+
+    artifact_dir = st.text_input(
+        "Artifact directory",
+        value="artifacts/attention_bilstm",
+        help="Run python train_attention_bilstm.py first if this directory does not exist."
+    )
+
+    artifact_path = Path(artifact_dir)
+    has_artifacts = (
+        (artifact_path / "model.pt").exists()
+        and (artifact_path / "preprocessor.json").exists()
+    )
+
+    if not has_artifacts:
+        st.warning("Neural artifacts were not found for this directory.")
+        st.code("python train_attention_bilstm.py", language="bash")
+        st.info("Training creates model.pt, preprocessor.json, and metrics.json under artifacts/attention_bilstm.")
+    else:
+        predictor, load_error = load_neural_predictor(artifact_dir)
+        if load_error:
+            st.error(f"Could not load neural model: {load_error}")
+        else:
+            sample_sentence = "The battery life is excellent, but the camera quality is disappointing."
+            sentence = st.text_area("Sentence", value=sample_sentence, height=120)
+            aspect = st.text_input("Target aspect", value="battery life")
+
+            col_a, col_b = st.columns([1, 1])
+            with col_a:
+                st.subheader("Architecture")
+                render_neural_architecture()
+
+            if st.button("Predict with Attention Bi-LSTM", type="primary") and sentence and aspect:
+                result = predictor.predict(sentence, aspect)
+                probabilities_df = pd.DataFrame(
+                    {
+                        "Label": list(result["class_probabilities"].keys()),
+                        "Probability": list(result["class_probabilities"].values()),
+                    }
+                )
+
+                with col_b:
+                    st.subheader("Prediction")
+                    st.metric("Sentiment", result["sentiment_label"])
+                    st.metric("Confidence", f"{result['confidence']:.3f}")
+                    fig_probs = px.bar(
+                        probabilities_df,
+                        x="Label",
+                        y="Probability",
+                        color="Label",
+                        color_discrete_map={
+                            "positive": "#2E7D32",
+                            "negative": "#C62828",
+                            "neutral": "#546E7A",
+                        },
+                        title="Class Probabilities",
+                    )
+                    fig_probs.update_layout(showlegend=False, yaxis_range=[0, 1])
+                    st.plotly_chart(fig_probs, use_container_width=True)
+
+                st.subheader("Token Attention Heatmap")
+                attention_df = build_attention_dataframe(result["attention_weights"])
+                fig_attention = px.imshow(
+                    attention_df,
+                    color_continuous_scale="YlOrRd",
+                    aspect="auto",
+                    labels={"x": "Token", "y": "", "color": "Attention"},
+                )
+                fig_attention.update_layout(height=220)
+                st.plotly_chart(fig_attention, use_container_width=True)
+
+                st.subheader("Attention Weights")
+                st.dataframe(pd.DataFrame(result["attention_weights"]), use_container_width=True)
+
+elif analysis_type == "Single Text":
     st.header("Single Text Analysis")
     
     # Text input
